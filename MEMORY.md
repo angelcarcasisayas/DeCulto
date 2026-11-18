@@ -1,36 +1,53 @@
 # MEMORY.md — DeCulto
 
-Memoria del proyecto entre sesiones. Máximo ~50 líneas: resume o elimina lo que ya no
-aporte.
+Memoria del proyecto entre sesiones. Mantener concisa y actualizar cuando cambien decisiones o estado.
 
 ## Estado actual
 
-- Fase 0: descubrimiento cerrado, sin código.
-- Stack: Java + Spring Boot + Thymeleaf SSR, PostgreSQL, Flyway, Spring Security (sesión).
-- Sin dependencias de frontend. Infraestructura 0 € (Render free + Neon/Supabase free).
-- Alcance v1: invitación, TMDB, ficha, nota 1–10, colección, reseña, watchlist, compartir.
+- Fase: descubrimiento y definición del producto.
+- Sin funcionalidades implementadas.
+- Product Brief en preparación para aprobación.
+- Objetivo: MVP en 6–8 semanas.
+- Proyecto individual orientado al aprendizaje y despliegue.
 
-## Decisiones (y por qué)
+## Decisiones aprobadas
 
-- Aprendizaje y despliegue por encima de crecimiento: proyecto personal, 10–12 semanas a 10 h/semana.
-- Organización personal como héroe: compartir no debe añadir complejidad a la colección.
-- Nota 1–10: coincide con la escala de TMDB, sin conversiones.
-- Login y colección privada: compartir exige destinatario identificado.
-- TMDB única API, media de usuarios (no críticos).
-- Búsqueda bilingüe `es-MX` + `en-US` fusionada por `id`: se busca en ambos idiomas.
-- Reseña exige nota y sobrevive al borrarla: la colección solo muestra películas puntuadas.
-- Puntuar saca de la watchlist: no puede estar en las dos.
-- Thymeleaf SSR en vez de SPA: menos plomería y menos riesgo en 96 h estimadas.
-- Solo películas, sin series ni listas: alcance controlado para terminar.
-- Sin documentos externos: AGENTS.md autocontenido y este archivo como único estado.
+- Nombre: DeCulto.
+- Stack: Java LTS, Spring Boot, Spring MVC, Thymeleaf SSR, PostgreSQL, Flyway, Spring Security con sesiones y Maven.
+- Sin framework ni dependencias de frontend.
+- Interfaz en español de España (`es-ES`).
+- Búsqueda TMDB en `es-MX` y `en-US`, fusionando por ID.
+- Mostrar ambos títulos de la película cuando estén disponibles.
+- Metadatos de películas en `es-MX`, con fallback a `en-US`.
+- Escala de puntuación de 1–10.
+- Puntuar incorpora la película a la colección y la saca de la watchlist.
+- Eliminar la puntuación elimina la película de la colección, pero conserva la reseña.
+- Una reseña requiere puntuación previa.
+- Colecciones privadas: no se permite consultar la colección completa de otro usuario.
+- Compartir exige destinatario registrado y genera una notificación.
+- TMDB es la única API externa prevista.
+- Objetivo de infraestructura: 0 €, usando planes gratuitos.
+- Organización personal como prioridad; compartir es complementario.
 
-## Aprendizajes y errores a evitar
+## Decisiones pendientes
 
-- (vacío por ahora)
+- Confirmar si la media mostrada procede de TMDB o de las valoraciones de los miembros de DeCulto.
+- Confirmar proveedores y límites gratuitos de alojamiento y base de datos.
+
+## Documentación
+
+- `AGENTS.md`: instrucciones de trabajo y convenciones técnicas.
+- `MEMORY.md`: decisiones aprobadas y estado del proyecto.
+- `PRODUCT_BRIEF.md`: definición, alcance y requisitos del producto.
+
+## Aprendizajes y errores
+
+- Pendiente de registrar.
 
 ## Próximos pasos
 
-- Crear repo, `pom.xml`, `Dockerfile` y primer despliegue vacío.
-- Verificar los free tiers vigentes de Render y Neon/Supabase.
-- Implementar: auth → TMDB → ficha → nota → colección → reseña → watchlist → compartir.
-- Cargar 20–30 películas antes de invitar.
+1. Aprobar y revisar `PRODUCT_BRIEF.md`.
+2. Alinear `AGENTS.md` y `MEMORY.md`.
+3. Preparar el esqueleto técnico inicial.
+4. Implementar el MVP de forma incremental.
+5. Desplegar y verificar el flujo completo.

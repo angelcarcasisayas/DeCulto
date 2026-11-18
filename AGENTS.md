@@ -1,26 +1,35 @@
 # AGENTS.md — DeCulto
 
-Web en español donde un grupo privado de cinéfilos registra, puntúa (1–10),
-reseña y comparte películas. Proyecto de aprendizaje de un solo desarrollador,
-10–12 semanas, infraestructura de 0 €.
+## Documentación del proyecto
 
-Alcance v1: registro por invitación, búsqueda en TMDB, ficha, puntuación,
-colección ordenable, reseña, watchlist, compartir con notificaciones y perfil
-mínimo. Fuera: series, listas temáticas, páginas de persona, importación, feed
-público, seguidores, colaboración, push/email y app nativa.
+Antes de trabajar, consulta los documentos relevantes:
 
-Estado y decisiones: `MEMORY.md`.
+- `PRODUCT_BRIEF.md`: visión, usuarios, alcance y requisitos del producto.
+- `MEMORY.md`: decisiones aprobadas y estado actual.
+- `AGENTS.md`: instrucciones de trabajo, convenciones y límites técnicos.
 
-## Stack y estructura
+Si encuentras contradicciones entre documentos, no decidas por tu cuenta. Expón el conflicto y solicita la decisión del usuario.
 
-- Java LTS + Spring Boot (versiones en `pom.xml`; no actualizar sin aprobación).
-- Thymeleaf con renderizado en servidor. Sin framework ni dependencias de frontend.
-- PostgreSQL + Flyway + Spring Data JPA.
+El usuario conserva siempre la decisión final sobre producto, alcance, prioridades y metodología.
+
+## Stack tecnológico
+
+- Java LTS + Spring Boot. Las versiones se definen en `pom.xml`; no actualizarlas sin aprobación.
+- Spring MVC para gestionar las peticiones web.
+- Thymeleaf con renderizado en servidor (SSR).
+- HTML, CSS y JavaScript nativo. Sin frameworks ni dependencias de frontend.
+- PostgreSQL como base de datos.
+- Spring Data JPA para persistencia.
+- Flyway para migraciones.
 - Spring Security con formulario y sesión. Sin JWT ni OAuth.
-- Maven con wrapper (`mvnw`). Docker → Render free. BD en Neon o Supabase free.
-- TMDB, única API externa, siempre llamada desde el servidor.
+- Maven con wrapper (`mvnw`).
+- Docker para empaquetado cuando corresponda.
+- Despliegue previsto en Render y base de datos en Neon o Supabase, sujetos a verificar sus planes gratuitos.
+- TMDB es la única API externa prevista y siempre se consulta desde el servidor.
 
-```
+## Estructura de paquetes
+
+```text
 src/main/java/com/deculto/
   config/        SecurityConfig, TmdbConfig
   user/          registro, login, perfil, invitaciones
@@ -28,105 +37,143 @@ src/main/java/com/deculto/
   collection/    valoraciones, reseñas, watchlist, orden
   sharing/       recomendaciones y notificaciones
   common/        errores, validación, utilidades
+
 src/main/resources/
   templates/     vistas Thymeleaf
-  static/        css y js nativo
-  db/migration/  Flyway (V1__init.sql, ...)
+  static/        CSS y JavaScript nativo
+  db/migration/  migraciones Flyway
   application.yml
 ```
 
-Solo `movie/` habla con TMDB; `collection/` trabaja con películas ya persistidas.
+Solo `movie/` se comunica con TMDB. `collection/` trabaja con películas persistidas localmente.
 
 ## Comandos
 
-```bash
-mvnw.cmd spring-boot:run      # desarrollo
-mvnw.cmd test                 # pruebas
-mvnw.cmd verify               # compilar + pruebas + checks
-mvnw.cmd clean package        # empaquetar
-docker build -t deculto .     # imagen
+En Windows:
+
+```bat
+mvnw.cmd spring-boot:run
+mvnw.cmd test
+mvnw.cmd verify
+mvnw.cmd clean package
+```
+
+Docker, cuando se utilice:
+
+```bat
+docker build -t deculto .
 docker run --env-file .env -p 8080:8080 deculto
 ```
 
-Variables: `TMDB_API_KEY`, `SPRING_DATASOURCE_URL`,
-`SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD`,
-`SPRING_PROFILES_ACTIVE`.
+Variables de entorno previstas:
 
-Lint: no configurado en la v1. No añadir sin aprobación.
+- `TMDB_API_KEY`
+- `SPRING_DATASOURCE_URL`
+- `SPRING_DATASOURCE_USERNAME`
+- `SPRING_DATASOURCE_PASSWORD`
+- `SPRING_PROFILES_ACTIVE`
+
+Lint: no configurado para la v1. No añadir herramientas de lint sin aprobación.
 
 ## Convenciones
 
-- Identificadores en inglés; interfaz en español (tuteo); comentarios en español
-  solo para explicar decisiones, nunca el qué.
-- Java: inyección por constructor, sin Lombok, `record` para DTO, sin
-  `System.out.println`.
-- Base de datos: plural y `snake_case`; `created_at`/`updated_at` con zona horaria.
-- Capas: `controller` valida y delega · `service` contiene las reglas ·
-  `repository` accede a datos. Las plantillas no consultan repositorios.
-- CSS con variables y mobile-first; JS nativo sin `console.log`.
-- Referencia: `movie/MovieController.java`, `collection/RatingService.java`,
-  `db/migration/V1__init.sql`.
+- Identificadores en inglés.
+- Interfaz en español de España y tratamiento de tú.
+- Comentarios en español solo para explicar decisiones, nunca para describir lo evidente.
+- Java: inyección por constructor, sin Lombok y uso de `record` para DTO cuando corresponda.
+- No utilizar `System.out.println`.
+- Base de datos: nombres plurales y `snake_case`.
+- Fechas de auditoría con zona horaria: `created_at` y `updated_at`.
+- Capas:
+  - `controller`: recibe peticiones, valida y delega.
+  - `service`: contiene reglas de negocio.
+  - `repository`: accede a datos.
+  - `templates`: no consulta repositorios directamente.
+- CSS con variables y enfoque mobile-first.
+- JavaScript nativo sin `console.log`.
 
-## Reglas de dominio / trampas conocidas
+## Reglas técnicas y de dominio
 
-- **Nota propia y media siempre visibles**, en la colección y en la ficha, sin
-  menús ni clics extra. Es la razón de ser del producto.
-- **Escala 1–10.** La media de TMDB ya viene sobre 10: no convertir.
-- **Puntuar crea la entrada en la colección.** Borrar la nota saca la película de
-  la colección, pero **conserva la reseña**, que sigue visible en la ficha.
-- **No se reseña sin haber puntuado.** Puntuar saca la película de la watchlist.
-- **Colecciones privadas:** toda consulta se filtra por el usuario autenticado. No
-  existe vista ni endpoint con datos de otro usuario.
-- **Compartir** exige destinatario registrado, búsqueda por usuario exacto, y
-  genera una notificación que enlaza a la ficha.
-- **TMDB se cachea en `movies` al primer acceso.** Solo endpoints de película
-  (`/movie`, `/search/movie`); nunca `/tv` ni `/person`.
-- **Búsqueda bilingüe:** cada búsqueda consulta TMDB en `es-MX` y en `en-US` y
-  fusiona resultados por `id`. Se busca al enviar el formulario o con retardo,
-  nunca en cada pulsación.
-- **Metadatos en `es-MX`** con fallback a `en-US`. Atribución de TMDB visible en el
-  pie de todas las páginas.
+- La escala de puntuación es de 1 a 10.
+- Puntuar una película crea su entrada en la colección.
+- Eliminar una puntuación saca la película de la colección.
+- La reseña se conserva aunque se elimine la puntuación. No debe depender exclusivamente de la existencia de la entrada de colección.
+- No se puede escribir una reseña sin haber puntuado la película.
+- Puntuar elimina la película de la watchlist.
+- Las consultas de colecciones se filtran siempre por el usuario autenticado.
+- No permitir consultar colecciones completas de otros usuarios.
+- Compartir exige un destinatario registrado y genera una notificación enlazada a la ficha.
+- Compartir una película no concede acceso a la colección del remitente.
+- TMDB se cachea en `movies` al primer acceso.
+- Utilizar únicamente endpoints de películas de TMDB. Nunca `/tv` ni `/person`.
+- Las búsquedas consultan `es-MX` y `en-US` y fusionan resultados por ID.
+- Mostrar ambos títulos cuando estén disponibles.
+- Metadatos en `es-MX`, con fallback a `en-US`.
+- La interfaz debe estar en español de España.
+- La atribución de TMDB debe aparecer en el pie de todas las páginas.
 
 ## Forma de trabajar
 
-- Planifica y espera aprobación si el cambio es una funcionalidad nueva, toca más
-  de 2 archivos, modifica el esquema, afecta a seguridad o es ambiguo.
-- Una funcionalidad por rama. Si un cambio toca más de 5 archivos, divídelo.
-- Sin refactors fuera de alcance: anota, no arregles.
-- Al terminar: qué cambió, cómo verificarlo, qué queda pendiente. Actualiza
-  `MEMORY.md`.
-- Commits con Conventional Commits en español: `feat: valorar películas de 1 a 10`.
+- Para funcionalidades nuevas, prepara un plan y espera aprobación antes de modificar código.
+- También solicita aprobación cuando el cambio afecte a más de dos archivos, modifique el esquema, afecte a seguridad o tenga requisitos ambiguos.
+- Una funcionalidad por rama.
+- Si un cambio afecta a más de cinco archivos, propone dividirlo.
+- No hagas refactors fuera del alcance aprobado.
+- Si detectas mejoras ajenas a la tarea, anótalas y comunícalas sin implementarlas.
+- No decidas por el usuario qué funcionalidades relacionadas deben incluirse.
+- No introduzcas dependencias, tecnologías ni patrones innecesarios.
+- La metodología y el orden de trabajo los decide el usuario. Puedes recomendar alternativas y explicar riesgos, pero no imponer fases.
+- Al terminar, informa de archivos modificados, comprobaciones realizadas, resultados y tareas pendientes.
+- Actualiza `MEMORY.md` cuando cambien decisiones o estado relevante del proyecto.
 
 ## Límites
 
-**✅ Siempre**
-- Crear una migración Flyway para cada cambio de esquema.
+## Reglas de trabajo
+
+- Lee `CONSTITUTION.md` y `AGENTS.md` antes de trabajar.
+- Antes de modificar código relacionado con una funcionalidad, consulta su spec activa en `specs/NNN-nombre/`.
+- No implementes requisitos que no estén aprobados.
+- Si no existe una spec cuando es necesaria, detente y propón crearla.
+- Respeta las aprobaciones del usuario antes de avanzar de fase.
+
+### Siempre
+
+- Crear una migración Flyway por cada cambio de esquema.
 - Validar entradas y mostrar errores comprensibles.
+- Proteger los datos de cada usuario.
+- Mantener los secretos fuera del repositorio.
 
-**⚠️ Pregunta antes**
-- Añadir cualquier dependencia (Maven, CSS o JS).
-- Crear archivos o carpetas fuera de la estructura.
+### Preguntar antes
+
+- Añadir dependencias Maven, CSS o JavaScript.
+- Crear archivos o carpetas fuera de la estructura definida.
 - Cambiar el esquema de datos.
-- Modificar este archivo, `pom.xml` o las versiones del stack.
-- Implementar algo fuera del alcance de la v1.
+- Modificar este archivo o `pom.xml`.
+- Actualizar versiones del stack.
+- Implementar funcionalidades fuera del alcance aprobado.
 
-**🚫 Nunca**
-- Implementar fuera de la v1: series, listas, personas, importación, feed público,
-  seguidores, colaboración, push/email, app nativa, ver colecciones ajenas.
-- Desactivar CSRF, validaciones o seguridad.
-- Exponer secretos o commitear `.env`.
+### Nunca
+
+- Implementar funcionalidades excluidas del MVP sin aprobación.
+- Desactivar CSRF, validaciones o mecanismos de seguridad.
+- Exponer secretos o subir `.env` al repositorio.
 - Registrar datos personales en logs.
-- Permitir que un usuario acceda a datos de otro.
+- Permitir que un usuario acceda a datos privados de otro.
 - Añadir frameworks o dependencias de frontend.
 - Editar migraciones ya aplicadas o reescribir el historial.
 
 ## Verificación
 
-`mvnw.cmd verify` debe pasar, y además:
+Utilizar comprobaciones proporcionales al cambio.
 
-- Recorrido completo con dos cuentas: registro → puntuar → colección → reseña →
-  watchlist → compartir → notificación.
-- Privacidad: la segunda cuenta no accede a datos de la primera (403 o 404).
-- Fallo de TMDB (clave inválida): error claro, nunca pantalla en blanco.
-- Responsive a 375 px y 1440 px.
-- Atribución de TMDB visible.
+Como referencia:
+
+- `mvnw.cmd verify` para la verificación general.
+- Pruebas de los componentes afectados.
+- Recorrido con dos cuentas: registro → puntuar → colección → reseña → watchlist → compartir → notificación → ficha.
+- Comprobar que la segunda cuenta no puede acceder a la colección privada de la primera (403 o 404).
+- Comprobar errores de TMDB, incluida una clave inválida.
+- Comprobar diseño responsive a 375 px y 1440 px.
+- Comprobar que la atribución de TMDB está visible.
+
+No ejecutes verificaciones costosas o ajenas al cambio sin una razón justificada.

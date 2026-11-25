@@ -1,4 +1,3 @@
-
 ---
 description: SDD · Redacta la spec, el plan y las tareas de una petición, sin tocar código
 mode: subagent

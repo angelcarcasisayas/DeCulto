@@ -1,0 +1,27 @@
+# Variables de entorno con valores reales (no versionar)
+.env
+
+# Salida de compilación
+target/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.csproj
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+
+# macOS
+.DS_Store
+
+# Logs
+*.log

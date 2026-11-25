@@ -4,7 +4,9 @@ description: SDD · Valida la spec RF por RF (tests + Chrome DevTools)
 agent: build
 ---
 
-Lee specs/$1/spec.md, specs/$1/plan.md, specs/$1/tasks.md, CONSTITUTION.md y AGENTS.md. Usa la skill sdd.
+Lee specs/$1/spec.md, specs/$1/plan.md, specs/$1/tasks.md, CONSTITUTION.md, AGENTS.md y PRODUCT_BRIEF.md. Usa la skill sdd.
+
+Revisa los cambios realizados mediante `git diff`.
 
 Recorre la spec requisito funcional (RF) por requisito funcional.
 

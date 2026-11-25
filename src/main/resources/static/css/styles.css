@@ -1,0 +1,159 @@
+/* DeCulto — hoja de estilos base.
+   Enfoque mobile-first: los estilos base son para 375 px y el breakpoint de
+   escritorio solo amplía espaciado y tipografía. No se oculta el desbordamiento
+   con overflow: el contenido se ajusta con anchos fluidos. */
+
+:root {
+  /* Colores. Todas las combinaciones de texto o enlace sobre fondo superan 4,5:1. */
+  --color-bg: #ffffff;
+  --color-surface: #f3f3f3;
+  --color-text: #1a1a1a;
+  --color-text-muted: #4a4a4a;
+  --color-link: #0056b3;
+  --color-link-hover: #003d80;
+  --color-border: #767676;
+  --color-focus: #0056b3;
+
+  /* Espaciado */
+  --spacing-xs: 0.5rem;
+  --spacing-s: 1rem;
+  --spacing-m: 1.5rem;
+  --spacing-l: 2rem;
+
+  /* Tipografía */
+  --font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-size-base: 1rem;
+  --font-size-small: 0.875rem;
+  --font-size-h1: 1.5rem;
+  --line-height: 1.5;
+
+  /* Foco visible: contorno de 3 px, con contraste de 7:1 sobre fondo y pie */
+  --focus-width: 3px;
+  --focus-offset: 2px;
+
+  /* Anchura máxima del contenido en escritorio y margen lateral mínimo */
+  --content-max-width: 60rem;
+  --content-gutter: var(--spacing-s);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  overflow-wrap: break-word;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+/* El contenido se centra con un margen lateral que se calcula a partir del ancho disponible,
+   de modo que cabecera y pie ocupen todo el ancho pero el texto no. */
+header,
+main,
+footer {
+  min-width: 0;
+  padding-inline: max(var(--content-gutter), calc((100% - var(--content-max-width)) / 2));
+}
+
+header {
+  padding-block: var(--spacing-s);
+  border-bottom: 1px solid var(--color-border);
+}
+
+main {
+  flex: 1;
+  padding-block: var(--spacing-m);
+}
+
+footer {
+  padding-block: var(--spacing-s);
+  background-color: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-small);
+}
+
+h1 {
+  margin: 0;
+  font-size: var(--font-size-h1);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+p {
+  max-width: 65ch;
+  margin: 0 0 var(--spacing-m);
+}
+
+p:last-child {
+  margin-bottom: 0;
+}
+
+footer p {
+  margin: 0;
+}
+
+a {
+  color: var(--color-link);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+a:hover {
+  color: var(--color-link-hover);
+  text-decoration-thickness: 2px;
+}
+
+/* Los enlaces de navegación de las páginas de error ocupan una superficie táctil de al menos 44 px */
+main a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: var(--focus-offset);
+}
+
+/* Escritorio: más espacio y ancho de contenido controlado */
+@media (min-width: 768px) {
+  :root {
+    --font-size-h1: 2rem;
+    --content-gutter: var(--spacing-l);
+  }
+
+  header {
+    padding-block: var(--spacing-m);
+  }
+
+  main {
+    padding-block: var(--spacing-l);
+  }
+
+  footer {
+    padding-block: var(--spacing-m);
+  }
+}

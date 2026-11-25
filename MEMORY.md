@@ -4,9 +4,10 @@ Memoria del proyecto entre sesiones. Mantener concisa y actualizar cuando cambie
 
 ## Estado actual
 
-- Fase: descubrimiento y definición del producto.
-- Sin funcionalidades implementadas.
-- Product Brief en preparación para aprobación.
+- Fase: esqueleto técnico implementado (spec 001); siguiente, especificar F1.
+- Esqueleto técnico (spec 001) implementado y verificado: arranque, migración de Flyway, páginas de inicio y error, y 13 pruebas automáticas que pasan.
+- Sin funcionalidades de producto implementadas.
+- Product Brief v0.2 aprobado.
 - Objetivo: MVP en 6–8 semanas.
 - Proyecto individual orientado al aprendizaje y despliegue.
 
@@ -28,6 +29,11 @@ Memoria del proyecto entre sesiones. Mantener concisa y actualizar cuando cambie
 - TMDB es la única API externa prevista.
 - Objetivo de infraestructura: 0 €, usando planes gratuitos.
 - Organización personal como prioridad; compartir es complementario.
+- Flujo SDD con agentes de OpenCode en `.opencode/agents/`: `coordinator` es primary y delega; `planner`, `implementer` y `reviewer` son subagentes.
+- El implementer solo puede escribir en `src/**`, `specs/**` y `MEMORY.md`; el resto de rutas queda bloqueado.
+- Sus comandos de terminal se limitan a `mvnw.cmd`, `git status` y `git diff`; cualquier otro pide permiso al usuario.
+- PostgreSQL 17 como versión de base de datos probada, con la dependencia `org.flywaydb:flyway-database-postgresql` (versión gestionada por Spring Boot).
+- Las pruebas fijan su base de datos (`deculto_test`) en código con `@SpringBootTest(properties)`, sin perfil `test`.
 
 ## Decisiones pendientes
 
@@ -42,12 +48,12 @@ Memoria del proyecto entre sesiones. Mantener concisa y actualizar cuando cambie
 
 ## Aprendizajes y errores
 
-- Pendiente de registrar.
+- PostgreSQL 19 no es compatible con Flyway 11.7.2. La dependencia `flyway-database-postgresql` es necesaria desde Flyway 10.
+- Las variables `SPRING_DATASOURCE_*` de `.env` tienen prioridad sobre el perfil, por lo que las pruebas necesitan fijar su propia base de datos en código.
 
 ## Próximos pasos
 
-1. Aprobar y revisar `PRODUCT_BRIEF.md`.
+1. Redactar la spec de registro e invitaciones (F1).
 2. Alinear `AGENTS.md` y `MEMORY.md`.
-3. Preparar el esqueleto técnico inicial.
-4. Implementar el MVP de forma incremental.
-5. Desplegar y verificar el flujo completo.
+3. Implementar el MVP de forma incremental.
+4. Desplegar y verificar el flujo completo.

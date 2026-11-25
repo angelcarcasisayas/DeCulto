@@ -15,9 +15,10 @@ Proceso:
 
 1. Escribe primero los tests de la tarea y comprueba que fallan por el motivo esperado.
 2. Implementa el código necesario hasta que pasen.
-3. Ejecuta `mvnw.cmd verify` y muestra el resultado.
-4. Marca $2 como completada en specs/$1/tasks.md e indica los RF que cubre.
-5. Informa de los archivos modificados, tests ejecutados y decisiones relevantes.
+3. Para cambios visuales, utiliza Chrome DevTools MCP para verificar el resultado en el navegador.
+4. Ejecuta `mvnw.cmd verify` y muestra el resultado.
+5. Marca $2 como completada en specs/$1/tasks.md e indica los RF que cubre.
+6. Informa de los archivos modificados, tests ejecutados y decisiones relevantes.
 
 Respeta el alcance de la tarea. No añadas dependencias ni modifiques requisitos o arquitectura aprobados sin mi permiso.
 
